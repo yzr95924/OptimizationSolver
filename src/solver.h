@@ -8,9 +8,13 @@
 #include <stdio.h>
 #include <math.h>
 #include <cmath>
+#include <fstream>
+#include <string.h>
+#include <stdint.h>
 
-
-#define DEBUG 1
+#define DEBUG 0
+/* fingerprint size */
+#define FP_SIZE 6
 
 using namespace std;
 
@@ -19,7 +23,7 @@ class OpSolver {
         OpSolver(int m, vector<pair<string, int> > inputDistribution);
         ~OpSolver();
         void GetOptimal();
-        void PrintResult();
+        void PrintResult(FILE* fpOut);
         bool CheckConstrain(int startIndex);
         bool Compare(pair<string, int> a, pair<string, int> b);
         
@@ -31,11 +35,11 @@ class OpSolver {
         int remainSum_;
         double storageBlow_;
         double maxEntropy_;
-        double 
+        double originalEntropy_;
 
         vector<pair<string, int> > inputFeqDistr_;  
         //std::vector<pair<string, float> > outputFeqDistr_;
-        vector<float> outputFeqDistr_;      
+        vector<double> outputFeqDistr_;      
 };
 
 #endif
