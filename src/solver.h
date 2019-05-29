@@ -26,7 +26,7 @@ class OpSolver {
         void PrintResult(FILE* fpOut);
         bool CheckConstrain(int startIndex);
         bool Compare(pair<string, int> a, pair<string, int> b);
-        
+        void PrintDistri(FILE* outputP, FILE* outputC);
     private:
         int m_;
         int n_;
@@ -38,7 +38,6 @@ class OpSolver {
         double originalEntropy_;
 
         vector<pair<string, int> > inputFeqDistr_;  
-        //std::vector<pair<string, float> > outputFeqDistr_;
         vector<double> outputFeqDistr_;      
 };
 

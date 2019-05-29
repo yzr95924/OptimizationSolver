@@ -19,9 +19,9 @@ OpSolver::OpSolver(int m, vector<pair<string, int> > inputDistribution) {
     }
 
     /**Initialization */
-    float average = (float)sum_ / m_;
+    double average = static_cast<double>(sum_) / m_;
     if (sum_ % m_ != 0) {
-        printf("the output maybe float\n");
+        printf("the output maybe double\n");
        
     }
     printf("the initialized average: %lf\n", average);
@@ -46,7 +46,7 @@ OpSolver::OpSolver(int m, vector<pair<string, int> > inputDistribution) {
 
 void OpSolver::PrintResult(FILE* fpOut) {
     printf("Total Plaintext Logical Chunk Amount: %d\n", sum_);
-    float csum = 0;
+    double csum = 0;
     for (auto iter = outputFeqDistr_.begin(); iter != outputFeqDistr_.end(); iter++) {
         csum += *iter;
     //    printf("%lf, ", *iter);
@@ -57,7 +57,7 @@ void OpSolver::PrintResult(FILE* fpOut) {
     double cipherRatio = static_cast<double> (sum_ - m_) / sum_;
     printf("Original Storage Saving Rate: %f\n", originlRatio);
     printf("Cipher Storage Saving Rate: %f\n", cipherRatio);
-    printf("Storage Saving Loss Rate: %f\n", (originlRatio - cipherRatio) / cipherRatio);
+    printf("Storage Saving Loss Rate: %f\n", (originlRatio - cipherRatio) / originlRatio);
 
     double cipherEntropy = 0;
     double freq = 0;
@@ -78,17 +78,28 @@ void OpSolver::PrintResult(FILE* fpOut) {
 
 }
 
+
+void OpSolver::PrintDistri(FILE* outputP, FILE* outputC) {
+    for (int i = 0; i < n_; i++) {
+        fprintf(outputP, "%d\n", inputFeqDistr_[i].second);
+    }
+    for (int i = 0; i < m_; i++) {
+        fprintf(outputC, "%f\n", outputFeqDistr_[i]);
+    }
+}
+
 void OpSolver::GetOptimal() {
     sort(inputFeqDistr_.begin(), inputFeqDistr_.end(), [=](pair<string, int> a, pair<string, int> b)
     { return a.second < b.second;});
 
     if (DEBUG) {
         for (auto iter = inputFeqDistr_.begin(); iter != inputFeqDistr_.end(); iter++) {
-            printf("%s, %d\n", iter->first.c_str(), iter->second);
+            printf("%d, ", iter->second);
         }
+        printf("\n");
     }
     int finishItem = 0;
-    float newAverage = 0;
+    double newAverage = 0;
     int startIndex = 0;
     while (1) {
         if (CheckConstrain(startIndex)) {
@@ -100,12 +111,19 @@ void OpSolver::GetOptimal() {
             outputFeqDistr_[currentIndex_] = inputFeqDistr_[currentIndex_].second;
             finishItem ++;
             remainSum_ -= outputFeqDistr_[currentIndex_];
-            newAverage = (float)remainSum_ / (float)(m_ - finishItem);
+            newAverage = (double)remainSum_ / (double)(m_ - finishItem);
             //for (int i = currentIndex_+1; i < m_; i++) {
             //}
             startIndex = currentIndex_ + 1;
-            outputFeqDistr_[startIndex] = (int)newAverage + 1;
+            outputFeqDistr_[startIndex] = newAverage;
             //printf("startIndex: %d, newAverage: %f\n",startIndex, newAverage);
+        }
+        if (DEBUG) {
+            for (auto iter = outputFeqDistr_.begin(); iter != outputFeqDistr_.end(); iter++) {
+                printf("%f, ", *iter);
+            }
+            printf("\n");
+            printf("Iteration: %d, remainSum_: %d, newAverage_: %lf\n", finishItem, remainSum_, newAverage);        
         }
         //printf("Iteration: %d, remainSum_: %d, newAverage_: %lf\n", finishItem, remainSum_, newAverage);
         //PrintResult();
